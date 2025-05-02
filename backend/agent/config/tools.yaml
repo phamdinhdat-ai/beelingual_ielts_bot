@@ -1,0 +1,21 @@
+retriever:
+  name: "retriever"
+  description: "A tool to retrieve documents from a vector store."
+  provider: "huggingface"
+  embed_model: "sentence-transformers/all-MiniLM-L6-v2"
+  embed_model_kwargs:
+    device: "cuda" 
+  args:
+    vector_store: "chroma"
+    retriever_kwargs:
+      search_kwargs:
+        k: 5
+        filter:
+          source: "ielts"
+      search_type: "similarity"
+      similarity_threshold: 0.7
+      max_results: 5
+      min_score: 0.5
+      max_score: 1.0
+      score_function: "cosine_similarity"
+
