@@ -1,17 +1,10 @@
 from crewai import Agent, Task, Crew
 from langchain_community.chat_models.ollama import ChatOllama
-from agent.tools.nl2sql_tool import NL2SQLTool
-from crewai import Agent, Task, Crew
 from crewai_tools import SerperDevTool
-
-# Create the NL2SQL tool
-nl2sql_tool = NL2SQLTool()
-# test_nl2sql.py
 from agent.tools.nl2sql_tool import NL2SQLTool, ValidateSQLQueryTool
-from crewai import Agent, Task, Crew
+from agent.tools.retrieve_tool import RetrieveTool, IngestTool
 from langchain_community.chat_models.ollama import ChatOllama
 from pydantic import BaseModel, Field
-
 from typing import Dict, Optional, Any
 
 class OutputAgent(BaseModel):
@@ -56,10 +49,24 @@ test_cases = [
 ]
 
 
-
+TEST_COLLECTION_NAME = "test_policy_docs"
+EMBEDDING_MODEL = "all-MiniLM-L6-v2" # Make sure you have this model locally or it can be downloaded
+PERSIST_DIR = "./chroma_db" # Directory to persist the vector store
 # Create the NL2SQL tool
 nl2sql_tool = NL2SQLTool()
 validate_sql_tool = ValidateSQLQueryTool()
+retriever_tool = RetrieveTool(
+            embedding_model_name=EMBEDDING_MODEL,
+            persist_dir=PERSIST_DIR
+        )
+ingest_tool = IngestTool(retriever_tool=retriever_tool)
+
+
+
+
+
+
+
 
 data_analyst = Agent(
         role="SQL Data Analyst",
