@@ -10,12 +10,12 @@ from sentence_transformers import SentenceTransformer, util
 import numpy as np
 import os
 import logging
-
+from pydantic.v1 import BaseModel as V1BaseModel
 # Logging setup remains the same
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-# --- Input Schemas (RetrieveInput, IngestInput) remain the same ---
+
 class RetrieveInput(BaseModel):
     query: str = Field(..., description="The query to search for relevant information")
     collection_name: str = Field(..., description="Name of the collection to search in")
@@ -38,7 +38,7 @@ class RetrieveTool(BaseTool):
     name: str = "ChromaDB Retriever Tool"
     description: str = ("Retrieves relevant information from a specified ChromaDB collection. "
                         "Can use standard similarity search or Maximum Marginal Relevance (MMR) for diversity.")
-    args_schema: type[BaseModel] = RetrieveInput
+    input_schema: type[BaseModel] = RetrieveInput
     model_config = ConfigDict(arbitrary_types_allowed=True)
     
     _client: Optional[chromadb.ClientAPI] = PrivateAttr(default=None)
@@ -321,7 +321,7 @@ class IngestTool(BaseTool):
     name: str = "ChromaDB Document Ingest Tool"
     description: str = ("Ingests text documents, with optional metadata and IDs, "
                         "into a specified ChromaDB collection for later retrieval.")
-    args_schema: type[BaseModel] = IngestInput
+    input_schema: type[BaseModel] = IngestInput
     model_config = ConfigDict(arbitrary_types_allowed=True) # Ensure this is here too
     retriever: RetrieveTool = Field(default=None, description="The RetrieveTool instance for document ingestion")
 

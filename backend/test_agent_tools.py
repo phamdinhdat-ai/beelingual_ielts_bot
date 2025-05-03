@@ -169,11 +169,6 @@ if __name__ == "__main__":
             verbose=2 # Use verbose=2 to see detailed LLM thoughts and tool calls
         )
 
-        # Kick off the crew execution
-        # For tasks requiring complex input not easily put in description, use `inputs`
-        # inputs = {'documents': sample_docs, 'metadatas': sample_metadatas, 'query': query}
-        # result = company_knowledge_crew.kickoff(inputs=inputs)
-        # However, here we've put the data in the task description for simplicity.
         result = company_knowledge_crew.kickoff()
 
         logger.info("--- Crew Execution Finished ---")
