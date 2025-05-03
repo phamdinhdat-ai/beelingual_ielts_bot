@@ -81,6 +81,6 @@ def test_convert_document(file_path, type_doc):
     documents = document_converter.lazy_load()
     return documents
 
-file_path = "backend/data/2501.07329v2.pdf"
-documents = covert_document(file_path=file_path)
-print(documents)
+# file_path = "backend/data/2501.07329v2.pdf"
+# documents = covert_document(file_path=file_path)
+# print(documents)
