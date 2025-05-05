@@ -183,14 +183,14 @@ def rewrite_query_node(state: AgentState):
 
     try:
         response = rewriter_chain.invoke({"query": query})
-        json_str = extract_clean_json(response.content)
-        if json_str:
-                response = json.loads(json_str)
-                print(f"Rewriter Output: {response}")
+        response_dict = extract_clean_json(response.content)
+        if response_dict:
+                # response = json.loads(response_dict)
+                print(f"Rewriter Output: {response_dict}")
                 return {
-                    "rewritten_query": response['rewritten_query'],
-                    "classified_agent": response['agent_classification'],
-                    "customer_id": response.get('extracted_customer_id') or state.get('customer_id'), # Prioritize extracted, fallback to state
+                    "rewritten_query": response_dict['rewritten_query'],
+                    "classified_agent": response_dict['agent_classification'],
+                    "customer_id": response_dict.get('extracted_customer_id') or state.get('customer_id'), # Prioritize extracted, fallback to state
                     "error": None
                 }
         else:
@@ -341,16 +341,16 @@ def reflection_node(state: AgentState):
             "original_query": original_query,
             "agent_response": agent_response
         })
-        json_str = extract_clean_json(response.content)
+        response_dict = extract_clean_json(response.content)
         logger.info(f"Reflection Chain Response: {response.content}")
-        logger.info(f"Reflection Chain JSON: {json_str}")
-        if json_str:
-            response = json.loads(json_str)
+        logger.info(f"Reflection Chain JSON: {response_dict}")
+        if response_dict:
+            # response = json.loads(response_dict)
 
-            logger.info(f"Reflection Chain Response: {response}")
+            logger.info(f"Reflection Chain Response: {response_dict}")
             return {
-                "reflection": response['feedback'],
-                "is_final": response['is_final_answer'],
+                "reflection": response_dict['feedback'],
+                "is_final": response_dict['is_final_answer'],
                 "retry_count": state.get('retry_count', 0) + 1, # Increment retry count
                 "error": None
             }
@@ -481,13 +481,13 @@ Please generate relevant follow-up questions based on this context.""")
 
     try:
         response = question_chain.invoke({})
-        json_str = extract_clean_json(response.content)
+        response_dict = extract_clean_json(response.content)
 
-        if json_str:
-            response_data = json.loads(json_str)
-            logger.info(f"Generated {len(response_data.get('suggested_questions', []))} follow-up questions")
+        if response_dict:
+            # response_data = json.loads(response_dict)
+            logger.info(f"Generated {len(response_dict.get('suggested_questions', []))} follow-up questions")
             return {
-                "suggested_questions": response_data.get("suggested_questions", []),
+                "suggested_questions": response_dict.get("suggested_questions", []),
                 "error": None
             }
         else:
@@ -495,7 +495,7 @@ Please generate relevant follow-up questions based on this context.""")
 
             # Fallback parsing - try to extract questions directly
             questions = []
-            for line in response.content.split('\n'):
+            for line in response_dict['suggested_questions']:
                 # Try to identify numbered questions or questions with question marks
                 if (line.strip().startswith(('1.', '2.', '3.', '4.', '5.')) or
                     '?' in line) and len(line.strip()) > 5:
