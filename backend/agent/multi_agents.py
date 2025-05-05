@@ -244,10 +244,14 @@ def execute_agent_node(state: AgentState, agent_def: CrewAgent, agent_name: str,
         try:
             logger.info(f"Using customer retriever tool for query: {query} with customer ID: {customer_id}")
             # Pass query potentially enriched with customer ID context
-            retriever_query = f"Info for customer {customer_id}: {query}"
-            tool_response = f"\nCustomer DB Info: {retriever_tool._run(query=retriever_query, collection_name=customer_id, use_mmr=False)}"
-            logger.info(f"Tool Response: {tool_response}")
-            prompt_messages.append(AIMessage(content=f"Tool Used: ChromaDB Retriever Tool\nResult: {tool_response}..."))
+            if retriever_tool._get_collection(customer_id) is not None:
+                retriever_query = f"Info for customer {customer_id}: {query}"
+                
+                tool_response = f"\nCustomer DB Info: {retriever_tool._run(query=retriever_query, collection_name=customer_id, use_mmr=False)}"
+                logger.info(f"Tool Response: {tool_response}")
+                prompt_messages.append(AIMessage(content=f"Tool Used: ChromaDB Retriever Tool\nResult: {tool_response}..."))
+            else: 
+                tool_response = "\nCustomer have no database, please add more documents or just do question-answering task"
         except Exception as e:
             print(f"Error using customer retriever tool: {e}")
             tool_response = "\nCustomer retrieval tool failed."
