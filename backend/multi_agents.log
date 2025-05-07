@@ -1,0 +1,32 @@
+2025-05-05 22:10:11.955 | INFO     | __main__:<module>:40 - Starting multi_agents.py
+2025-05-05 22:10:11.956 | INFO     | __main__:<module>:87 - LangGraph State Defined.
+2025-05-05 22:10:11.956 | INFO     | __main__:<module>:91 - Environment setup starting ......
+2025-05-05 22:10:11.956 | INFO     | __main__:setup_environment:44 - --- Setting up test environment ---
+2025-05-05 22:10:11.957 | INFO     | __main__:setup_environment:48 - Loading LLM: mistral:latest
+2025-05-05 22:10:11.959 | INFO     | __main__:setup_environment:58 - LLM loaded successfully.
+2025-05-05 22:10:11.959 | INFO     | __main__:setup_environment:61 - Initializing RAG Tools...
+2025-05-05 22:10:20.026 | INFO     | __main__:setup_environment:67 - RAG Tools initialized successfully.
+2025-05-05 22:10:20.026 | INFO     | __main__:<module>:93 - Environment setup complete.
+2025-05-05 22:10:20.036 | INFO     | __main__:<module>:126 - CrewAI Agent Definitions Ready.
+2025-05-05 22:10:20.038 | INFO     | __main__:<module>:370 - LangGraph Nodes Defined.
+2025-05-05 22:10:20.152 | INFO     | __main__:<module>:567 - LangGraph Compiled.
+2025-05-05 22:10:20.152 | INFO     | __main__:run_agentic_system:584 - 
+🚀 Starting Agentic System for Query: 'What is CoPali?' (Customer ID: dat1)
+2025-05-05 22:10:20.157 | INFO     | __main__:rewrite_query_node:132 - --- Node: Rewriter ---
+2025-05-05 22:10:20.157 | INFO     | __main__:rewrite_query_node:134 - Customer ID found: dat1
+2025-05-05 22:10:20.158 | INFO     | __main__:route_query:377 - --- Conditional Edge: Routing Query ---
+2025-05-05 22:10:20.159 | INFO     | __main__:route_query:383 - Routing based on classification: Customer
+2025-05-05 22:10:20.162 | INFO     | __main__:execute_agent_node:245 - Using customer retriever tool for query: What is CoPali? with customer ID: dat1
+2025-05-05 22:10:20.166 | INFO     | __main__:execute_agent_node:249 - Tool Response: 
+Customer DB Info: No relevant documents found matching the query.
+2025-05-05 22:10:20.220 | INFO     | __main__:question_generator_node:433 - --- Node: Question Generator ---
+2025-05-05 22:10:20.225 | INFO     | __main__:run_agentic_system:593 - 
+🏁 Agentic System Finished!
+2025-05-05 22:10:20.225 | INFO     | __main__:run_agentic_system:594 - ------ Final State ------
+2025-05-05 22:10:20.226 | INFO     | __main__:run_agentic_system:596 - Original Query: What is CoPali?
+2025-05-05 22:10:20.227 | INFO     | __main__:run_agentic_system:600 - Error Occurred: Customer agent failed during generation: Ollama call failed with status code 404. Maybe your model is not found and you should pull the model with `ollama pull mistral:latest`.
+2025-05-05 22:10:20.227 | INFO     | __main__:run_agentic_system:601 - 
+Final Response:
+
+2025-05-05 22:10:20.227 | INFO     | __main__:<module>:619 - Agent Response: 
+2025-05-05 22:10:20.228 | INFO     | __main__:<module>:620 - Suggested Questions: []
