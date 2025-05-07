@@ -14,7 +14,8 @@ from langchain.retrievers.ensemble import EnsembleRetriever
 from langchain_core.retrievers import BaseRetriever
 from langchain.retrievers.document_compressors import EmbeddingsFilter, DocumentCompressorPipeline
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.tools import Tool
+# from langchain.tools import Tool
+from crewai.tools import BaseTool
 from langchain_community.chat_models.ollama import ChatOllama # For retriever tool LLM
 from dotenv import load_dotenv
 
@@ -61,6 +62,7 @@ text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=20
 
 # --- Helper Functions ---
 
+    
 def get_collection_name(user_id: Optional[int] = None, guest_session_id: Optional[str] = None) -> str:
     """Generates a unique and valid ChromaDB collection name."""
     if user_id is not None:
@@ -125,8 +127,6 @@ def get_vector_retriever(collection_name: str, k: int = 4) -> Optional[BaseRetri
         logger.info(f"Successfully created retriever for collection '{collection_name}'.")
         return retriever
      except Exception as e:
-        # Catch specific ChromaDB collection not found error if possible,
-        # otherwise, general exception.
         if "does not exist" in str(e).lower():
              logger.warning(f"Collection '{collection_name}' not found or empty. Cannot create retriever.")
         else:
@@ -169,8 +169,29 @@ def get_ensemble_retriever(collection_name: str, k_vector: int = 3, k_bm25: int 
         return get_vector_retriever(collection_name) # Fallback
 
 
+
+# create custome retriever tool 
+class CustomRetrieverTool(BaseTool):
+    name = "Custom Retriever Tool"
+    description = "A custom retriever tool for specific document retrieval tasks."
+    func: callable = None
+    coroutine: Optional[callable] = None
+
+    def _run(self, query: str) -> str:
+        """Run the retriever tool with the provided query."""
+        if self.func:
+            return self.func(query)
+        else:
+            raise ValueError("No function defined for this tool.")
+    def _arun(self, query: str) -> str:
+        """Asynchronously run the retriever tool with the provided query."""
+        if self.coroutine:
+            return self.coroutine(query)
+        else:
+            raise ValueError("No coroutine defined for this tool.")
+
 # --- Retriever Tool Creation ---
-def create_retriever_tool(collection_name: str, use_ensemble: bool = True) -> Optional[Tool]:
+def create_retriever_tool(collection_name: str, use_ensemble: bool = True) -> Optional[BaseTool]:
     """Creates a LangChain Tool wrapping the retriever for the specified collection."""
     if use_ensemble:
          retriever = get_ensemble_retriever(collection_name)
@@ -182,7 +203,7 @@ def create_retriever_tool(collection_name: str, use_ensemble: bool = True) -> Op
         def dummy_func(query:str): return f"No documents found or index available for {collection_name}."
         tool_description = f"Placeholder tool for {collection_name} - no documents available or index error."
         logger.warning(f"Returning dummy tool for collection '{collection_name}'.")
-        return Tool(name=f"{collection_name}_retriever", func=dummy_func, description=tool_description)
+        return CustomRetrieverTool(name=f"{collection_name}_retriever", func=dummy_func, description=tool_description)
 
     # --- Optional: Contextual Compression ---
     # Improves relevance by filtering/compressing retrieved docs using the LLM
@@ -229,7 +250,7 @@ def create_retriever_tool(collection_name: str, use_ensemble: bool = True) -> Op
             logger.error(f"Error during sync retriever tool execution for {tool_name}: {e}", exc_info=True)
             return f"Error retrieving documents for {collection_name}."
 
-    return Tool(
+    return CustomRetrieverTool(
         name=tool_name,
         func=_run_retriever, # Pass the sync version for compatibility
         # coroutine=_arun_retriever, # Provide async version if framework supports it
