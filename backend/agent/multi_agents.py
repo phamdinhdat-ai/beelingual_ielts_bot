@@ -77,12 +77,14 @@ class AgentState(TypedDict):
     customer_id: Optional[str]
     rewritten_query: str
     classified_agent: Literal["Company", "Customer", "Naive", "Unknown"]
+    assigned_agent: Optional[str]  # Optional field for assigned agent
     agent_response: str
     reflection: str
     is_final: bool
     error: Optional[str]
     retry_count: int
     suggested_questions: List[str]  # New field for suggested questions
+    chat_history : Optional[List[dict]]  # Optional chat history for context
 
 logger.info("LangGraph State Defined.")
 
@@ -232,7 +234,7 @@ def execute_agent_node(state: AgentState, agent_def: CrewAgent, agent_name: str,
 
     # Basic tool check (can be expanded)
     # This is a placeholder - real tool use requires more complex agent logic (like ReAct or OpenAI Functions Agent)
-    if "duckduckgo_search" in available_tools and agent_name != "Customer": # Example: Use search for non-customer
+    if "tavily_search" in available_tools and agent_name != "Customer": # Example: Use search for non-customer
         try:
             tool_response = f"\nSearch Results: {search_tool.run(query)}"
             prompt_messages.append(AIMessage(content=f"Tool Used: duckduckgo_search\nResult: {tool_response[:500]}...")) # Add tool result snippet

@@ -1,0 +1,68 @@
+gen_sql_task:
+  description: >
+    Your task is generate SQL queries based on the user's request. You will be provided with a database schema and a natural language request. Your goal is to generate an accurate SQL query that fulfills the user's request.
+    
+    Given schema: {schema}
+    
+    User request: {query}
+
+    Your response should be a valid SQL query that can be executed on the given schema. If the request is ambiguous or cannot be fulfilled, please respond with "I cannot fulfill this request."
+
+    #BEGIN EXAMPLE:
+    Given schema:
+    CREATE TABLE categories (
+    category_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    category_name TEXT NOT NULL UNIQUE
+    )
+    CREATE TABLE products (
+    product_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    product_name TEXT NOT NULL,
+    category_id INTEGER NOT NULL,
+    price REAL NOT NULL,
+    FOREIGN KEY (category_id) REFERENCES categories (category_id)
+    )
+    User request: "Get all products in the 'Electronics' category."
+    Your response in Json format as bellow:
+    {{
+        "query": "SELECT * FROM products WHERE category_id = (SELECT category_id FROM categories WHERE category_name = 'Electronics');",
+        "explanation": "This query selects all products from the 'products' table where the category_id matches the id of the 'Electronics' category from the 'categories' table."
+        "table": ["products"],
+    }}
+    User request: "Get all products with a price greater than 100."
+    Your response in Json format as bellow:
+    {{
+        "query": "SELECT * FROM products WHERE price > 100;",
+        "explanation": "This query selects all products from the 'products' table where the price is greater than 100.",
+        "table": ["products"],
+    }}
+    User request: "Get the names of all categories."
+    Your response in Json format as bellow:
+    {{
+        "query": "SELECT category_name FROM categories;",
+        "explanation": "This query selects all category names from the 'categories' table.",
+        "table": ["categories"],
+    }}
+    User request: "Get all categories with their product count."
+    Your response in Json format as bellow:
+    {{
+        "query": "SELECT c.category_name, COUNT(p.product_id) AS product_count FROM categories c LEFT JOIN products p ON c.category_id = p.category_id GROUP BY c.category_name;",
+        "explanation": "This query selects all category names from the 'categories' table and counts the number of products in each category by joining the 'products' table.",
+        "table": ["categories", "products"],
+    }}
+
+    #END EXAMPLE
+    #CONSTRAINTS:
+    - The SQL query must be valid and executable on the given schema.
+    - The SQL query must be in standard SQL syntax.
+    - The SQL query must not contain any syntax errors or typos.
+  
+  expected_output: >
+    Your response should be a valid SQL query in Json format as bellow:
+    {{
+        "query": "<SQL_QUERY>",
+        "explanation": "<EXPLANATION>",
+        "table": ["<TABLE_NAME_1>", "<TABLE_NAME_2>", ...]
+    }}
+  
+
+    

@@ -139,11 +139,13 @@ class RetrieveTool(BaseTool):
             else:
                 # Standard retrieval
                 logger.debug(f"Performing standard query for '{query}' (top_k={top_k})")
+                
                 results = collection.query(
                     query_texts=[query],
                     n_results=top_k,
                     include=["documents", "metadatas"]
                 )
+                
                 documents = results['documents'][0] if results.get('documents') else []
                 metadatas = results.get('metadatas', [[]])[0] if results.get('metadatas') else [None] * len(documents)
                 if len(metadatas) != len(documents):
@@ -181,7 +183,7 @@ class RetrieveTool(BaseTool):
         metadatas = results.get('metadatas', [[]])[0] if results.get('metadatas') and results['metadatas'] else [None] * len(documents)
         embeddings = results.get('embeddings', [[]])[0] if results.get('embeddings') and results['embeddings'] else []
 
-        min_len = min(len(documents), len(metadatas) if metadatas else 0, len(embeddings) if embeddings else 0)
+        min_len = min(len(documents), len(metadatas) if metadatas else 0)
         if min_len == 0 or len(documents) == 0 or len(embeddings) == 0:
             logger.debug("MMR: Not enough valid data (docs/embeddings) found for MMR processing.")
             return []

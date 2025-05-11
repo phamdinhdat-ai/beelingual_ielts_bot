@@ -172,8 +172,8 @@ def get_ensemble_retriever(collection_name: str, k_vector: int = 3, k_bm25: int 
 
 # create custome retriever tool 
 class CustomRetrieverTool(BaseTool):
-    name = "Custom Retriever Tool"
-    description = "A custom retriever tool for specific document retrieval tasks."
+    name: str 
+    description:str = "A custom retriever tool for specific document retrieval tasks."
     func: callable = None
     coroutine: Optional[callable] = None
 

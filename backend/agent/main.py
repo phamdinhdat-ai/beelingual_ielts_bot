@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from agent.database import engine, Base # Import engine and Base
+from agent.database import engine, Base 
 from agent.router import documents as documents_router
 from agent.router import chat as chat_router
 from agent.router import auth as auth_router
